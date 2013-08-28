@@ -1,8 +1,8 @@
 package main
 
 import (
+	gobot_handlers "github.com/but3k4/gobot/handlers"
 	gobot_utils "github.com/but3k4/gobot/utils"
-	gobot_handlers "github.com/but3k4/gobot/utils"
 	irc "github.com/fluffle/goirc/client"
 )
 
