@@ -1,23 +1,26 @@
-import irc "github.com/fluffle/goirc/client"
+package main
+
+import (
+	gobot_utils "github.com/but3k4/gobot/utils"
+	gobot_handlers "github.com/but3k4/gobot/utils"
+	irc "github.com/fluffle/goirc/client"
+)
+
+var (
+	cfg = utils.NewConfig()
+)
 
 func main() {
-    c := irc.SimpleClient("nick")
-    c.SSL = true
+	c := irc.SimpleClient(cfg.Options["gobot"]["nick"])
+	c.EnableStateTracking()
+	c.SSL = true
 
-    // Add handlers to do things here!
-    // e.g. join a channel on connect.
-    c.AddHandler(irc.CONNECTED,
-        func(conn *irc.Conn, line *irc.Line) { conn.Join("#channel") })
-    // And a signal on disconnect
-    quit := make(chan bool)
-    c.AddHandler(irc.DISCONNECTED,
-        func(conn *irc.Conn, line *irc.Line) { quit <- true })
+	c.AddHandler(irc.CONNECTED, gobot_handlers.Nickserv)
+	quit := make(chan bool)
+	c.AddHandler(irc.DISCONNECTED, func(conn *irc.Conn, line *irc.Line) { quit <- true })
 
-    // Tell client to connect
-    if err := c.Connect("irc.freenode.net"); err != nil {
-        fmt.Printf("Connection error: %s\n", err.String())
-    }
-
-    // Wait for disconnect
-    <-quit
+	if err := c.Connect(cfg.Options["gobot"]["server"]); err != nil {
+		fmt.Printf("Connection error: %s\n", err.String())
+	}
+	<-quit
 }
